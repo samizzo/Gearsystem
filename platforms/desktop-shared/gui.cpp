@@ -45,6 +45,7 @@ static ImFont* default_font[4];
 static bool show_main_menu = true;
 static char sms_bootrom_path[4096] = "";
 static char gg_bootrom_path[4096] = "";
+static std::string current_rom;
 
 static void main_menu(void);
 static void main_window(void);
@@ -63,6 +64,7 @@ static void popup_modal_gamepad(int pad);
 static void popup_modal_about(void);
 static void push_recent_rom(std::string path);
 static void menu_reset(void);
+static void menu_reload(void);
 static void menu_pause(void);
 static void menu_ffwd(void);
 static void show_info(void);
@@ -140,6 +142,9 @@ void gui_shortcut(gui_ShortCutEvent event)
         break;
     case gui_ShortcutReset:
         menu_reset();
+        break;
+    case gui_ShortcutReload:
+        menu_reload();
         break;
     case gui_ShortcutPause:
         menu_pause();
@@ -225,6 +230,7 @@ void gui_load_rom(const char* path)
     str = str.substr(0, str.find_last_of("."));
     str += ".sym";
     gui_debug_load_symbols_file(str.c_str());
+    current_rom = path;
 
     if (config_emulator.start_paused)
     {
@@ -292,6 +298,12 @@ static void main_menu(void)
             if (ImGui::MenuItem("Pause", shortcut, &config_emulator.paused))
             {
                 menu_pause();
+            }
+
+            gui_event_get_shortcut_string(shortcut, sizeof(shortcut), gui_ShortcutReload);
+            if (ImGui::MenuItem("Reload", shortcut))
+            {
+                menu_reload();
             }
 
             ImGui::Separator();
@@ -1336,6 +1348,12 @@ static void menu_reset(void)
             emu_frame_buffer[i] = 0;
         }
     }
+}
+
+static void menu_reload(void)
+{
+    if (current_rom.size() > 0)
+        gui_load_rom(current_rom.c_str());
 }
 
 static void menu_pause(void)

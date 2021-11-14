@@ -1,5 +1,6 @@
 GUI_EVENT(OpenROM)
 GUI_EVENT(Reset)
+GUI_EVENT(Reload)
 GUI_EVENT(Pause)
 GUI_EVENT(FFWD)
 GUI_EVENT(SaveState)
